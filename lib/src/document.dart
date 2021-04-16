@@ -135,4 +135,9 @@ class PDFDocument {
       );
     }).asStream() as Stream<PDFPage?>;
   }
+
+  String getFilePath() {
+    return _filePath ?? "";
+  }
+  
 }
