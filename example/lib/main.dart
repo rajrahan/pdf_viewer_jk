@@ -24,7 +24,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _isLoading = true;
-  PDFDocument document;
+  late PDFDocument document;
   String title = "Loading";
 
   @override
