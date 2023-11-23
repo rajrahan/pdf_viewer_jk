@@ -26,21 +26,35 @@ import android.os.Handler;
 /**
  * PdfViewerJkPlugin
  */
-public class PdfViewerJkPlugin implements MethodCallHandler {
+public class PdfViewerJkPlugin implements FlutterPlugin,  MethodCallHandler {
     private static Registrar instance;
     private HandlerThread handlerThread;
     private Handler backgroundHandler;
     private final Object pluginLocker = new Object();
     private final String filePrefix = "PdfViewerJk";
 
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
+        channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "pdf_viewer_jk");
+        channel.setMethodCallHandler(this);
+        // Initialize other plugin-related resources here if needed
+    }
+
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        channel.setMethodCallHandler(null);
+        channel = null;
+        // Clean up your plugin's resources here
+    }
+
     /**
      * Plugin registration.
      */
-    public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "pdf_viewer_jk");
-        instance = registrar;
-        channel.setMethodCallHandler(new PdfViewerJkPlugin());
-    }
+//    public static void registerWith(Registrar registrar) {
+//        final MethodChannel channel = new MethodChannel(registrar.messenger(), "pdf_viewer_jk");
+//        instance = registrar;
+//        channel.setMethodCallHandler(new PdfViewerJkPlugin());
+//    }
 
     @Override
     public void onMethodCall(final MethodCall call, final Result result) {
