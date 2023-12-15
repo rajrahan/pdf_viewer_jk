@@ -1,5 +1,7 @@
 package pro.jawad.pdf_viewer_jk;
 
+import androidx.annotation.NonNull;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,11 +14,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 
+import android.content.Context;
+import android.app.Activity;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
+
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.HandlerThread;
@@ -26,8 +33,10 @@ import android.os.Handler;
 /**
  * PdfViewerJkPlugin
  */
-public class PdfViewerJkPlugin implements FlutterPlugin,  MethodCallHandler {
-    private static Registrar instance;
+public class PdfViewerJkPlugin implements FlutterPlugin,  MethodChannel.MethodCallHandler, ActivityAware {
+    private Context applicationContext;
+    private Activity activity;
+    private MethodChannel channel;
     private HandlerThread handlerThread;
     private Handler backgroundHandler;
     private final Object pluginLocker = new Object();
@@ -36,25 +45,36 @@ public class PdfViewerJkPlugin implements FlutterPlugin,  MethodCallHandler {
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
         channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "pdf_viewer_jk");
+        applicationContext = flutterPluginBinding.getApplicationContext();
         channel.setMethodCallHandler(this);
-        // Initialize other plugin-related resources here if needed
     }
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
         channel.setMethodCallHandler(null);
-        channel = null;
-        // Clean up your plugin's resources here
+        applicationContext = null;
     }
 
-    /**
-     * Plugin registration.
-     */
-//    public static void registerWith(Registrar registrar) {
-//        final MethodChannel channel = new MethodChannel(registrar.messenger(), "pdf_viewer_jk");
-//        instance = registrar;
-//        channel.setMethodCallHandler(new PdfViewerJkPlugin());
-//    }
+    @Override
+    public void onAttachedToActivity(ActivityPluginBinding binding) {
+        activity = binding.getActivity();
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        activity = null;
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+        activity = binding.getActivity();
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+        activity = null;
+    }
+
 
     @Override
     public void onMethodCall(final MethodCall call, final Result result) {
@@ -114,7 +134,7 @@ public class PdfViewerJkPlugin implements FlutterPlugin,  MethodCallHandler {
 
  private boolean clearCacheDir() {
         try {
-            File directory = instance.context().getCacheDir();
+            File directory = applicationContext.getCacheDir();
             FilenameFilter myFilter = new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
@@ -145,7 +165,7 @@ public class PdfViewerJkPlugin implements FlutterPlugin,  MethodCallHandler {
         File file;
         try {
             String fileName = String.format("%s-%d.png", fileNameOnly, page);
-            file = File.createTempFile(fileName, null, instance.context().getCacheDir());
+            file = File.createTempFile(fileName, null, applicationContext.getCacheDir());
             FileOutputStream out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
@@ -168,8 +188,8 @@ public class PdfViewerJkPlugin implements FlutterPlugin,  MethodCallHandler {
 
             PdfRenderer.Page page = renderer.openPage(--pageNumber);
 
-            double width = instance.activity().getResources().getDisplayMetrics().densityDpi * page.getWidth();
-            double height = instance.activity().getResources().getDisplayMetrics().densityDpi * page.getHeight();
+            double width = activity.getResources().getDisplayMetrics().densityDpi * page.getWidth();
+            double height = activity.getResources().getDisplayMetrics().densityDpi * page.getHeight();
             final double docRatio = width / height;
 
             width = 2048;
