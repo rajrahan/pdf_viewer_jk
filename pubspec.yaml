@@ -15,7 +15,7 @@ dependencies:
   async: ^2.9.0
   flutter_cache_manager: ^3.3.0
   flutter_spinbox: ^0.11.0
-  flutter_svg: ^0.21.0
+  flutter_svg: ^1.1.6
   http: ^0.13.5
   path_provider: ^2.0.11
   path: ^1.8.2
