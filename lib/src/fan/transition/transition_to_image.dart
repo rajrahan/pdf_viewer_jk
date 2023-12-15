@@ -28,27 +28,27 @@ class TransitionToImage extends StatefulWidget {
     this.borderRadius,
     this.color,
     this.blendMode,
-    this.fit: BoxFit.contain,
+    this.fit = BoxFit.contain,
     this.alignment = Alignment.center,
     this.repeat = ImageRepeat.noRepeat,
     this.matchTextDirection = false,
     this.invertColors = false,
     this.imageFilter,
-    this.placeholder: const Icon(Icons.clear),
+    this.placeholder = const Icon(Icons.clear),
     this.placeholderBuilder,
-    this.duration: const Duration(milliseconds: 300),
+    this.duration = const Duration(milliseconds: 300),
     this.tween,
-    this.curve: Curves.easeInOut,
-    this.transitionType: TransitionType.fade,
+    this.curve = Curves.easeInOut,
+    this.transitionType = TransitionType.fade,
     this.loadingWidget = const Center(child: const CircularProgressIndicator()),
     this.loadingWidgetBuilder,
-    this.enableRefresh: false,
-    this.longPressForceRefresh: false,
-    this.disableMemoryCache: false,
-    this.disableMemoryCacheIfFailed: false,
+    this.enableRefresh = false,
+    this.longPressForceRefresh = false,
+    this.disableMemoryCache = false,
+    this.disableMemoryCacheIfFailed = false,
     this.loadedCallback,
     this.loadFailedCallback,
-    this.forceRebuildWidget: false,
+    this.forceRebuildWidget = false,
     this.printError = false,
   }) : super(key: key);
 
@@ -303,7 +303,7 @@ class _TransitionToImageState extends State<TransitionToImage> with SingleTicker
     });
   }
 
-  Future<void> _getImage({bool reload: false}) async {
+  Future<void> _getImage({bool reload = false}) async {
     if (reload) {
       if (widget.printError) print('Reloading image.');
 
@@ -393,7 +393,7 @@ class _TransitionToImageState extends State<TransitionToImage> with SingleTicker
       opacity: _fadeTween.animate(_animation as Animation<double>),
                     child: widget.borderRadius != null
                         ? ClipRRect(
-                            borderRadius: widget.borderRadius,
+                            borderRadius: widget.borderRadius!,
                             child: buildRawImage(),
                           )
                         : buildRawImage(),
@@ -402,7 +402,7 @@ class _TransitionToImageState extends State<TransitionToImage> with SingleTicker
       position: _slideTween.animate(_animation as Animation<double>),
                     child: widget.borderRadius != null
                         ? ClipRRect(
-                            borderRadius: widget.borderRadius,
+                            borderRadius: widget.borderRadius!,
                             child: buildRawImage(),
                           )
                         : buildRawImage(),
